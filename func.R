@@ -1,3 +1,5 @@
+source("json2row.R")
+
 # 関数いろいろ
 
 requireLibs <- function(libs) {
@@ -40,7 +42,7 @@ validateData <- function(tbl){
 }
 
 # slackから受け取ったjsonを処理するとこ
-makeData <- function(jsonFromSlack){
+makeData <- function(jsonFromSlack, json2row){
   ret <- NA
   if(is.list(jsonFromSlack[["messages"]])){
     json <- jsonFromSlack[["messages"]]
@@ -58,25 +60,4 @@ makeData <- function(jsonFromSlack){
 }
 
 
-# slackから受け取ったjsonを１メッセージごとに処理するとこ
-json2row <- function(message){
-  dat <- 
-    c(getVal(message$type),
-      getVal(message$user),
-      getVal(message$text),
-      format(
-        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
-        "%Y/%m/%d"
-      ),
-      format(
-        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
-        "%H:%M:%S"
-      ))
-  dat <- c(dat,dat[3])
-  names(dat) <- c("type", "user", "text", "年月日", "時分秒", "search")
-  
-  dat
-}
-
-if(file.exists("json2row.R")) source("json2row.R")
 

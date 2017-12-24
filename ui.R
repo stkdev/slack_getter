@@ -1,5 +1,5 @@
 
-requireLibs("shiny")
+library("shiny")
 
 shinyUI(fluidPage(
   
@@ -16,6 +16,7 @@ shinyUI(fluidPage(
         end = format(Sys.Date(), "%Y-%m-%d")
       ),
       textInput('refine',"絞込ワード"),
+      checkboxInput('chk_custom', "仮：カスタムフィルタ", value = T),
       hr(),
       tags$p("↓接続先設定↓"),
       hr(),

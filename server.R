@@ -1,6 +1,8 @@
 source("func.R")
 
-requireLibs(c("shiny","httr","magrittr","ggplot2"))
+library("shiny")
+library("httr")
+library("magrittr")
 
 shinyServer(function(input, output, session) {
   # init
@@ -77,7 +79,8 @@ shinyServer(function(input, output, session) {
                 )
     jsonFromSlack <- content(resp, "parsed")
     
-    makeData(jsonFromSlack)
+    json2row <- ifelse(input$chk_custom, json2row.custom, json2row.defult)
+    makeData(jsonFromSlack, json2row)
   })
   
   # グラフタブ
@@ -101,8 +104,7 @@ shinyServer(function(input, output, session) {
   ## 全体の集計グラフ
   output$graph_all <- renderPlot({
     tbl <- getSlackData()
-    save(tbl, file="tbl.obj")
-    
+
     check <- validateData(tbl)
     
     if(check$is_error){
