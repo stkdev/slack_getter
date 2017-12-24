@@ -4,7 +4,7 @@ library("shiny")
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Slackからログとってくるツール"),
+  titlePanel("Slackからログとってくるツール v0.2.1"),
   
   # Sidebar 
   sidebarLayout(
