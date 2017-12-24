@@ -30,37 +30,13 @@ validateData <- function(tbl){
     ret$message = "データが空です。"
   }else if(is.na(tbl)){
     ret$is_error = T
-    ret$message = "エラーで取得できなかったみたい。"
+    ret$message = "0件です。"
   }else if(nrow(tbl)==0){
     ret$is_error = T
     ret$message = "0件です。"
   }
   
   return(ret)
-}
-
-
-######
-# 拡張する場合は変更するとこ
-######
-
-# slackから受け取ったjsonを１メッセージごとに処理するとこ
-json2row <- function(message){
-  dat <- 
-    c(getVal(message$type),
-      getVal(message$user),
-      getVal(message$text),
-      format(
-        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
-        "%Y/%m/%d"
-      ),
-      format(
-        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
-        "%H:%M:%S"
-      ))
-  names(dat) <- c("type", "user", "text", "年月日", "時分秒")
-  
-  dat
 }
 
 # slackから受け取ったjsonを処理するとこ
@@ -80,3 +56,27 @@ makeData <- function(jsonFromSlack){
   }
   return(ret)
 }
+
+
+# slackから受け取ったjsonを１メッセージごとに処理するとこ
+json2row <- function(message){
+  dat <- 
+    c(getVal(message$type),
+      getVal(message$user),
+      getVal(message$text),
+      format(
+        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
+        "%Y/%m/%d"
+      ),
+      format(
+        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
+        "%H:%M:%S"
+      ))
+  dat <- c(dat,dat[3])
+  names(dat) <- c("type", "user", "text", "年月日", "時分秒", "search")
+  
+  dat
+}
+
+if(file.exists("json2row.R")) source("json2row.R")
+

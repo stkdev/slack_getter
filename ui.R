@@ -1,13 +1,12 @@
 
 requireLibs("shiny")
 
-# Define UI for application that draws a histogram
 shinyUI(fluidPage(
   
   # Application title
   titlePanel("Slackからログとってくるツール"),
   
-  # Sidebar with a slider input for number of bins 
+  # Sidebar 
   sidebarLayout(
     sidebarPanel(
       dateRangeInput(
@@ -18,14 +17,14 @@ shinyUI(fluidPage(
       ),
       textInput('refine',"絞込ワード"),
       hr(),
-      tags$p("接続先設定"),
+      tags$p("↓接続先設定↓"),
       hr(),
       uiOutput('tokenOut'),
       uiOutput('channelOut'),
       uiOutput('urlOut')
     ),
     
-    # Show a plot of the generated distribution
+    # MainPanel
     mainPanel(
        tabsetPanel(
          tabPanel("Plot",

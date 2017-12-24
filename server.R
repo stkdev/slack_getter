@@ -1,8 +1,7 @@
 source("func.R")
 
-requireLibs(c("shiny","httr","magrittr"))
+requireLibs(c("shiny","httr","magrittr","ggplot2"))
 
-# Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
   # init
   endPoint.history <- 'https://slack.com/api/channels.history'
@@ -18,7 +17,7 @@ shinyServer(function(input, output, session) {
     params <- list(
       token = getVal(token),
       channel = getVal(channel),
-      count = 200,
+      count = 500,
       latest = latest,
       oldest = oldest
     )
@@ -82,20 +81,6 @@ shinyServer(function(input, output, session) {
   })
   
   # グラフタブ
-  ## 全体の集計グラフ
-  output$graph_all <- renderPlot({
-    tbl <- getSlackData()
-    save(tbl, file="tbl.obj")
-    
-    check <- validateData(tbl)
-    
-    if(check$is_error){
-      return(check$message)
-    }
-    
-    pie(table(tbl[,"user"]))
-  })
-  
   ## 全体の集計
   output$table_all <- renderTable({
     tbl <- getSlackData()
@@ -109,7 +94,48 @@ shinyServer(function(input, output, session) {
     ret <- as.data.frame(table(tbl[,"user"]))
     names(ret)<- c("key","count")
     
+    ret <- ret[order(ret$count,decreasing = T),]
     rbind(ret,data.frame(key = "合計", count = sum(ret$count) ))
+  })
+  
+  ## 全体の集計グラフ
+  output$graph_all <- renderPlot({
+    tbl <- getSlackData()
+    save(tbl, file="tbl.obj")
+    
+    check <- validateData(tbl)
+    
+    if(check$is_error){
+      return(check$message)
+    }
+    
+    ret <- sort(table(tbl[,"user"]))
+
+    par(family = "HiraKakuProN-W3")
+    pie(ret)
+  })
+  
+  ## 絞り込みの集計表
+  output$table_filterd <- renderTable({
+    tbl <- getSlackData()
+    
+    check <- validateData(tbl)
+    if(check$is_error){
+      return(check$message)
+    }
+    
+    filter <- grep(pattern = input$refine, tbl[,"search"])
+    if(sum(filter)==0){
+      return("0件です。")
+    }
+    
+    ret <- as.data.frame(table(tbl[filter,"user"]))
+    names(ret)<- c("key","count")
+    
+    ret <- ret[order(ret$count,decreasing = T),]
+    ret <- ret[ret$count>0,]
+    rbind(ret,data.frame(key = "合計", count = sum(ret$count) ))
+    
   })
   
   ## 絞り込みの集計グラフ
@@ -122,33 +148,15 @@ shinyServer(function(input, output, session) {
       return(check$message)
     }
     
-    filter <- grep(pattern = input$refine, tbl[,"text"])
+    filter <- grep(pattern = input$refine, tbl[,"search"])
     if(sum(filter)==0){
       return("0件です。")
     }
     
-    pie(table(tbl[filter,"user"]))
-  })
-  
-  ## 絞り込みの集計表
-  output$table_filterd <- renderTable({
-    tbl <- getSlackData()
-    
-    check <- validateData(tbl)
-    if(check$is_error){
-      return(check$message)
-    }
-    
-    filter <- grep(pattern = input$refine, tbl[,"text"])
-    if(sum(filter)==0){
-      return("0件です。")
-    }
-    
-    ret <- as.data.frame(table(tbl[filter,"user"]))
-    names(ret)<- c("key","count")
-    
-    rbind(ret,data.frame(key = "合計", count = sum(ret$count) ))
-    
+    ret <- sort(table(tbl[filter,"user"]))
+
+    par(family = "HiraKakuProN-W3")
+    pie(ret)
   })
   
   # 一覧表タブ
@@ -161,8 +169,8 @@ shinyServer(function(input, output, session) {
       return(check$message)
     }
     
-    filter <- grep(pattern = input$refine, tbl[,"text"])
-    ret <- tbl[filter,]
+    filter <- grep(pattern = input$refine, tbl[,"search"])
+    ret <- tbl[filter,(1:ncol(tbl)-1)]
 
     ret
   })
