@@ -19,7 +19,7 @@ shinyServer(function(input, output, session) {
     params <- list(
       token = getVal(token),
       channel = getVal(channel),
-      count = 500,
+      count = 1000,
       latest = latest,
       oldest = oldest
     )
@@ -113,7 +113,7 @@ shinyServer(function(input, output, session) {
     
     ret <- sort(table(tbl[,"user"]))
 
-    par(family = "HiraKakuProN-W3")
+    par(family = "IPAPGothic")
     pie(ret)
   })
   
@@ -157,7 +157,7 @@ shinyServer(function(input, output, session) {
     
     ret <- sort(table(tbl[filter,"user"]))
 
-    par(family = "HiraKakuProN-W3")
+    par(family = "IPAPGothic")
     pie(ret)
   })
   
@@ -187,7 +187,7 @@ shinyServer(function(input, output, session) {
       return(check$message)
     }
     
-    paste("CSVダウンロードボタンつくる？")
+    paste("CSVダウンロードつくったほうがいいかな？")
   })
   
 })
