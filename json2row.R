@@ -24,25 +24,6 @@ json2row.default <- function(message){
 ######
 
 json2row.custom <- function(message){
-  if(getVal(message$subtype) != "bot_message"){
-    return(NA)
-  }
-  dat <-
-    c(getVal(message$type),
-      getVal(lapply(message$attachments[[1]]$fields,function(l){if(l$title=="企業名"){l$value}}) %>% unlist),
-      getVal(lapply(message$attachments[[1]]$fields,function(l){if(l$title=="画面名"){l$value}}) %>% unlist),
-      getVal(message$attachments[[1]]$pretext),
-      format(
-        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
-        "%Y/%m/%d"
-      ),
-      format(
-        as.POSIXct(as.numeric(message$ts), origin="1970-01-01"),
-        "%H:%M:%S"
-      ))
-  dat <- c(dat, paste(dat[2],dat[3],dat[4],sep=" "))
-  names(dat) <- c("type", "user", "page", "text", "年月日", "時分秒", "search")
-  
-  dat
+  json2row.default(message)
 }
 
