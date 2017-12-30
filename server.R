@@ -79,7 +79,7 @@ shinyServer(function(input, output, session) {
                 )
     jsonFromSlack <- content(resp, "parsed")
     
-    json2row <- ifelse(input$chk_custom, json2row.custom, json2row.defult)
+    json2row <- ifelse(input$chk_custom, json2row.custom, json2row.default)
     makeData(jsonFromSlack, json2row)
   })
   
